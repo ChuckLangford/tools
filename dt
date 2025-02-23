@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Directory for storing command database
+DEVTOOLS_DIR="$HOME/.local/share/devtools"
+COMMANDS_FILE="$DEVTOOLS_DIR/commands.json"
+MY_COMMANDS_FILE="$DEVTOOLS_DIR/my-commands.json"
+
+# Ensure directory exists
+mkdir -p "$DEVTOOLS_DIR"
+
+# Initialize commands.json if it doesn't exist
+if [ ! -f "$COMMANDS_FILE" ]; then
+    echo '{
+        "commands": [
+            {
+                "name": "get-user",
+                "description": "Fetch user data by ID",
+                "command": "curl -s https://api.example.com/users/$1 | jq .",
+                "params": [
+                    {
+                        "name": "user_id",
+                        "description": "The ID of the user to fetch"
+                    }
+                ]
+            }
+        ]
+    }' > "$COMMANDS_FILE"
+fi
+
+# Function to merge commands.json and my-commands.json
+get_combined_commands() {
+    if [ -f "$MY_COMMANDS_FILE" ]; then
+        jq -s '.[0].commands + (.[1].commands // []) | {commands: .}' "$COMMANDS_FILE" "$MY_COMMANDS_FILE"
+    else
+        cat "$COMMANDS_FILE"
+    fi
+}
+
+# Function to list commands
+list_commands() {
+    get_combined_commands | jq -r '.commands[] | .name + " :: " + .description' | \
+        fzf --delimiter ':' \
+            --preview 'echo {1}' \
+            --preview-window 'down:3:wrap'
+}
+
+# Function to execute command
+execute_command() {
+    local selected="$1"
+    local cmd_name="${selected%% ::*}"
+
+    # Get command details from the merged list
+    local cmd_json=$(get_combined_commands | jq -r --arg name "$cmd_name" '.commands[] | select(.name == $name)')
+    local command=$(echo "$cmd_json" | jq -r '.command')
+    local params_count=$(echo "$cmd_json" | jq '.params | length')
+
+    # If command has parameters, prompt for them
+    if [ "$params_count" -gt 0 ]; then
+        declare -a param_values
+
+        # Loop through parameters and prompt for values
+        for i in $(seq 0 $(($params_count-1))); do
+            param_name=$(echo "$cmd_json" | jq -r ".params[$i].name")
+            param_desc=$(echo "$cmd_json" | jq -r ".params[$i].description")
+            echo "Enter $param_name ($param_desc):"
+            read -r value
+            param_values[$i]="$value"
+        done
+
+        # Replace $1, $2, etc. with actual values
+        for i in $(seq 0 $(($params_count-1))); do
+            command=${command//\$$((i+1))/${param_values[$i]}}
+        done
+    fi
+
+    eval "$command"
+}
+
+# Main menu
+case "${1:-}" in
+    "list")
+        list_commands
+        ;;
+    *)
+        selected=$(list_commands)
+        if [ -n "$selected" ]; then
+            execute_command "$selected"
+        fi
+        ;;
+esac

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Define the repo location
+DT_REPO_DIR="${DT_REPO_DIR:-$HOME/dt}"  # Adjust this path if needed
+BRANCH="${BRANCH:-main}"  # Adjust if using a different branch
+INSTALL_SCRIPT="install.sh"  # Path to install script within the repo
+
+# Change to the repository directory
+if [[ ! -d "$DT_REPO_DIR" ]]; then
+  echo "Error: Repository directory '$DT_REPO_DIR' does not exist."
+  echo "Set an environment variable named DT_REPO_DIR to the path of your local edsights/dev-tools repo."
+  exit 1
+fi
+
+cd "$DT_REPO_DIR" || exit
+
+# Check if the local repo has uncommitted changes
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Error: Uncommitted changes detected in '$DT_REPO_DIR'."
+  echo "Please commit or stash your changes before updating."
+  echo "You can stash changes using: git stash push -m 'Stashing before update'"
+  exit 1
+fi
+
+# Fetch latest updates without merging
+git fetch origin "$BRANCH"
+
+# Check if the local branch is behind the remote
+LOCAL_HASH=$(git rev-parse HEAD)
+REMOTE_HASH=$(git rev-parse origin/"$BRANCH")
+
+if [[ "$LOCAL_HASH" != "$REMOTE_HASH" ]]; then
+  echo "Update available: Local ($LOCAL_HASH) is behind Remote ($REMOTE_HASH)"
+
+  # Perform the update
+  echo "Pulling latest changes..."
+  git pull origin "$BRANCH" --ff-only
+
+  echo "Update complete."
+  cd dt
+
+  # Run the install script if it exists
+  if [[ -x "$INSTALL_SCRIPT" ]]; then
+    echo "Running $INSTALL_SCRIPT..."
+    sudo ./install.sh
+  else
+    echo "Warning: $INSTALL_SCRIPT not found or not executable."
+    echo "You may need to run it manually."
+  fi
+
+  exit 0
+else
+  echo "No updates available. Local is up to date."
+  exit 0
+fi

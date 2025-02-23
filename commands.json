@@ -1,0 +1,14 @@
+{
+        "commands": [
+	    {
+		    "name": "update-dt",
+		    "description": "Goes to gitlab and updates the local dt, note that you'll need an environment variable for this (the script tells you which)",
+		    "command": "update-dt"
+	    },
+	    {
+		    "name": "git-configure",
+		    "description": "Updates a local repo with a local git configuration. Allows you to easily work on multiple accounts without having to re-configure when switching work.",
+		    "command": "git-configure"
+	    }
+	]
+}

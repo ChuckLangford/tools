@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Ensure we are in a Git repository
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "❌ Error: This is not a Git repository."
+    exit 1
+fi
+
+# Get repository name
+repo_name=$(basename "$(git rev-parse --show-toplevel)")
+
+# Display current settings
+echo "🔍 Current Git Configuration for this repository:"
+echo "---------------------------------------------"
+echo "User Name:  $(git config --local --get user.name)"
+echo "User Email: $(git config --local --get user.email)"
+echo ""
+
+# Prompt for user name
+read -rp "Enter Git user.name (leave blank to keep current): " user_name
+if [[ -n "$user_name" ]]; then
+    git config --local user.name "$user_name"
+    echo "✔ Set user.name to '$user_name'"
+fi
+
+# Prompt for user email
+read -rp "Enter Git user.email (leave blank to keep current): " user_email
+if [[ -n "$user_email" ]]; then
+    git config --local user.email "$user_email"
+    echo "✔ Set user.email to '$user_email'"
+fi
+
+echo ""
+echo "✅ Git configuration updated for this repository."
+echo "Run 'git config --local --list' to verify."
