@@ -1,0 +1,8 @@
+#!/bin/bash
+# https://www.aircrack-ng.org/doku.php?id=airmon-ng
+
+INTERFACE=$(iw dev | awk '$1=="Interface"{print $2}')
+
+sudo airmon-ng stop $INTERFACE
+sudo service NetworkManager start
+echo "Interface $INTERFACE is no longer in monitor mode."

@@ -9,6 +9,31 @@
 		    "name": "git-configure",
 		    "description": "Updates a local repo with a local git configuration. Allows you to easily work on multiple accounts without having to re-configure when switching work.",
 		    "command": "git-configure"
+	    },
+	    {
+		    "name": "airmon-start-monitor-mode",
+		    "description": "Put a wifi device into monitor mode",
+		    "command": "airmon-start-monitor-mode"
+	    },
+	    {
+		    "name": "airmon-stop-monitor-mode",
+		    "description": "Put a wifi device into managed mode",
+		    "command": "airmon-stop-monitor-mode"
+	    },
+	    {
+		    "name": "branches",
+		    "description": "Shows all the local branches of a repo by date",
+		    "command": "branches"
+	    },
+	    {
+		    "name": "check-interface-mode",
+		    "description": "Shows the current mode of wifi devices",
+		    "command": "check-interface-mode"
+	    },
+	    {
+		    "name": "kismetdb-to-pcap",
+		    "description": "Takes a kismet database and translates it to a pcap file",
+		    "command": "kismetdb-to-pcap"
 	    }
 	]
 }
