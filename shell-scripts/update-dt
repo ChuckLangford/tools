@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the repo location
-DT_REPO_DIR="${DT_REPO_DIR:-$HOME/dt}"  # Adjust this path if needed
+DT_REPO_DIR="${DT_REPO_DIR:-$HOME/Documents/src/tools}"  # Adjust this path if needed
 BRANCH="${BRANCH:-main}"  # Adjust if using a different branch
 INSTALL_SCRIPT="install.sh"  # Path to install script within the repo
 
