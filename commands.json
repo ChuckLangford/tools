@@ -34,6 +34,16 @@
 		    "name": "kismetdb-to-pcap",
 		    "description": "Takes a kismet database and translates it to a pcap file",
 		    "command": "kismetdb-to-pcap"
+	    },
+	    {
+		    "name": "start-tailscale-ssh-server",
+		    "description": "Starts a tailscale ssh server on the local computer",
+		    "command": "start-tailscale-ssh-server"
+	    },
+	    {
+		    "name": "stop-tailscale-ssh-server",
+		    "description": "Stops a tailscale ssh server on the local computer",
+		    "command": "stop-tailscale-ssh-server"
 	    }
 	]
 }
